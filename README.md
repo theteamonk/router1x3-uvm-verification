@@ -1,34 +1,45 @@
 # Router1x3 SV/UVM Verification
 ROUTER is a device that connects two or more networks (or computer LANs) and forwards data packets between computer networks (or from Source Server Network to Destination Client Network). It is an OSI layer 3 routing device. Router 1x3 has one ingress and three egress . As the definition suggests, the packet from a source network is routed to one of the destination networks.<br/>
 ## Router-Packet
-### Packet Format:
+### Packet Format
 The Packet consists of 3 parts i.e. Header, Payload and Parity such that each ID of 8 bits width and the length of the payload can be extended between 1 byte to 63 bytes.<br/>
 
 <img align="center" width="404" height="315" alt="Project-Page-4 drawio" src="https://github.com/user-attachments/assets/8bcba9f0-f5b1-4011-8cea-765b03d19b2e" />
 
-#### <ins>Header</ins>:
+#### <ins>Header</ins>
 The packet header contains two fields Destination Address and Payload Length.<br/>
 - *Destination Address*: The destination address of the packet is of 2 bits. The router drives the packets to respective ports based on the destination address of the packets. Each output port has 2-bit unique port address. If the destination address of the packet matches the port address, then the router drives the packet to the output port. The address "**3**" is invalid.<br/>
 - *Payload Length*: The length of the data is 6 bits. It specifies the number of data bytes. A packet can have a minimum data size of 1 byte and a maximum size of 63 bytes.<br/>
   - If Length = 1, it means the data length is 1 byte.<br/>
   - If Length = 63, it means the data length is 63 bytes.<br/>
-#### <ins>Payload</ins>:
+#### <ins>Payload</ins>
 Payload is the data information. Data should be in terms of bytes.<br/>
-#### <ins>Parity</ins>:
+#### <ins>Parity</ins>
 This field contains the security check of the packet. It is calculated as bitwise parity over the header and payload bytes of the packet (!!! add how it is calculated).<br/>
 ## Router-Input Protocol
-
+<img align="centre" width="604" height="515" alt="Input protocol" src="https://github.com/user-attachments/assets/c26a220e-0baf-454a-a935-b9e79b2d3aa3" /><br/><br/>
+**Characteristics**:<br/>
+  - *TestBench Note*:
+    - All input signals are active high except active low reset and are synchronized to the falling edge of the clock. This is because the DUT router is sensitive to the rising edge of the clock. Therefore, in the testbench, driving input signals on the falling edge ensure adequate setup and hold time. But in the SystemVerilog/UVM-based testbench, the clocking block can be used to drive the signals on the positive edge of the clock itself and thus avoids metastability.<br/>
+    - The packet_valid signal is asserted on the same clock edge when the header byte is driven onto the input data bus.<br/>
+    - Since the header byte contains the address, this tells the router to which output channel the packet should be routed (data_out_0, data_out_1, data_out_2).<br/>
+    - Each subsequent byte of the payload after the header byte should be driven on the input data bus for every new falling edge of clock.<br/>
+    - After the last payload byte has been driven, on the next falling clock, the packet_valid signal must be de-asserted, and the packet parity byte should be driven. This signals the completion of the packet.<br/>
+    - The testbench shouldn't drive any bytes when a busy signal is detected instead it should hold the last driven value.<br/>
+    - The "busy" signal when asserted drops any incoming byte of data.<br/>
+    - The "err" signal is asserted when a packet parity mismatch is detected.<br/>
 ## Router-Output Protocol
+<img align="centre" width="2987" height="1166" alt="Project-Output Protocol drawio" src="https://github.com/user-attachments/assets/e220b064-bd2d-4661-b1d8-1269c93fc5da" />
 
 ## Verification Plan
 ### Features
-#### <ins>Packet Routing</ins>:  
+#### <ins>Packet Routing</ins>
 The [packet](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-packet) is driven from the input port and is routed to any one output port, based on the address of the destination network.<br/>
-#### <ins>Parity Checking</ins>:
+#### <ins>Parity Checking</ins>
 An error detection technique that tests the integrity of digital data being transmitted between Server & Client. This technique ensures that the data transmitted by the Server network is received by the Client network without getting corrupted.<br/>
-#### <ins>Reset</ins>:
+#### <ins>Reset</ins>
 It is an active low synchronous input that resets the router. Under reset conditions, the router FIFOs are made empty and the valid out signals go low indicating that no valid packet is detected on the output data bus.<br/>
-#### <ins>Sending Packet</ins>:
+#### <ins>Sending Packet</ins>
 Refer to [Router-Input Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-input-protocol)
-#### <ins>Reading Packet</ins>:
+#### <ins>Reading Packet</ins>
 Refer to [Router-Output Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-output-protocol)
