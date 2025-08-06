@@ -54,18 +54,5 @@ This field contains the security check of the packet. It is calculated as bitwis
   - The read_enb_x (read_enb_0, read_enb_1, read_enb_2) must be asserted within 30 clock cycles of vld_out_x (vld_out_0, vld_out_1, vld_out_2) being asserted else time-out occurs, which resets the FIFO.<br/>
   - The  data_out_x bus will be tri-ststed during a scenario when a packet's byte is lost due to time-out condition.<br/>
 
-## Verification Plan
-### Features
-#### <ins>Packet Routing</ins>
-The [packet](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-packet) is driven from the input port and is routed to any one output port, based on the address of the destination network.<br/>
-#### <ins>Parity Checking</ins>
-An error detection technique that tests the integrity of digital data being transmitted between Server & Client. This technique ensures that the data transmitted by the Server network is received by the Client network without getting corrupted.<br/>
-#### <ins>Reset</ins>
-It is an active low synchronous input that resets the router. Under reset conditions, the router FIFOs are made empty and the valid out signals go low indicating that no valid packet is detected on the output data bus.<br/>
-#### <ins>Sending Packet</ins>
-Refer to [Router-Input Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-input-protocol)
-#### <ins>Reading Packet</ins>
-Refer to [Router-Output Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-output-protocol)
-
 ## Important Note
 This Specification is provided by Maven-Silicon under their [Terms and Conditions](https://www.maven-silicon.com/terms-and-conditions/)
