@@ -54,5 +54,6 @@ This field contains the security check of the packet. It is calculated as bitwis
   - The read_enb_x (read_enb_0, read_enb_1, read_enb_2) must be asserted within 30 clock cycles of vld_out_x (vld_out_0, vld_out_1, vld_out_2) being asserted else time-out occurs, which resets the FIFO.<br/>
   - The  data_out_x bus will be tri-ststed during a scenario when a packet's byte is lost due to time-out condition.<br/>
 
-## Important Note
-This Specification is provided by Maven-Silicon under their [Terms and Conditions](https://www.maven-silicon.com/terms-and-conditions/)
+##
+> [!IMPORTANT]
+> This Specification is provided by Maven-Silicon under their [Terms and Conditions](https://www.maven-silicon.com/terms-and-conditions/)
