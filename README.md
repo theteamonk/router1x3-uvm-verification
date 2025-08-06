@@ -1,10 +1,16 @@
 # Router1x3 SV/UVM Verification
+<p align="center">
+<img width="680" height="442" alt="RouterTopBlock drawio" src="https://github.com/user-attachments/assets/1514ea33-d076-4b04-b2de-fc398db186d4" />
+</p>
+
 ROUTER is a device that connects two or more networks (or computer LANs) and forwards data packets between computer networks (or from Source Server Network to Destination Client Network). It is an OSI layer 3 routing device. Router 1x3 has one ingress and three egress . As the definition suggests, the packet from a source network is routed to one of the destination networks.<br/>
 ## Router-Packet
 ### Packet Format
 The Packet consists of 3 parts i.e. Header, Payload and Parity such that each ID of 8 bits width and the length of the payload can be extended between 1 byte to 63 bytes.<br/>
 
-<img align="center" width="404" height="315" alt="Project-Page-4 drawio" src="https://github.com/user-attachments/assets/8bcba9f0-f5b1-4011-8cea-765b03d19b2e" />
+<p align="center">
+<img width="404" height="315" alt="Project-Page-4 drawio" src="https://github.com/user-attachments/assets/8bcba9f0-f5b1-4011-8cea-765b03d19b2e" />
+</p>
 
 #### <ins>Header</ins>
 The packet header contains two fields Destination Address and Payload Length.<br/>
@@ -15,9 +21,13 @@ The packet header contains two fields Destination Address and Payload Length.<br
 #### <ins>Payload</ins>
 Payload is the data information. Data should be in terms of bytes.<br/>
 #### <ins>Parity</ins>
-This field contains the security check of the packet. It is calculated as bitwise parity over the header and payload bytes of the packet (!!! add how it is calculated).<br/>
+This field contains the security check of the packet. It is calculated as bitwise parity over the header and payload bytes of the packet.<br/>
 ## Router-Input Protocol
-<img align="centre" width="604" height="515" alt="Input protocol" src="https://github.com/user-attachments/assets/c26a220e-0baf-454a-a935-b9e79b2d3aa3" /><br/><br/>
+
+<p align="center">
+<img width="604" height="515" alt="Input protocol" src="https://github.com/user-attachments/assets/c26a220e-0baf-454a-a935-b9e79b2d3aa3" />
+</p>
+
 **Characteristics**:<br/>
   - *TestBench Note*:
     - All input signals are active high except active low reset and are synchronized to the falling edge of the clock. This is because the DUT router is sensitive to the rising edge of the clock. Therefore, in the testbench, driving input signals on the falling edge ensure adequate setup and hold time. But in the SystemVerilog/UVM-based testbench, the clocking block can be used to drive the signals on the positive edge of the clock itself and thus avoids metastability.<br/>
@@ -29,7 +39,20 @@ This field contains the security check of the packet. It is calculated as bitwis
     - The "busy" signal when asserted drops any incoming byte of data.<br/>
     - The "err" signal is asserted when a packet parity mismatch is detected.<br/>
 ## Router-Output Protocol
-<img align="centre" width="2987" height="1166" alt="Project-Output Protocol drawio" src="https://github.com/user-attachments/assets/e220b064-bd2d-4661-b1d8-1269c93fc5da" />
+
+<p align="center">
+<img width="2987" height="1166" alt="Project-Output Protocol drawio" src="https://github.com/user-attachments/assets/e220b064-bd2d-4661-b1d8-1269c93fc5da" />
+</p>
+
+**Characteristics**:<br/>
+- *TestBench Note*:
+  - All output signals are active high and are synchronized to the rising edge of the clock.<br/>
+  - Each output port data_out_x (data_out_0, data_out_1, data_out_2) is internally buffered by a FIFO of size 16x9.<br/>
+  - The router asserts the vld_out_x (vld_out_0, vld_out_1, vld_out_2) signal when valid data appears on the data_out_x (data_out_0, data_out_1, data_out_2) output bus. This is a signal to the receiver's client which indicates that data is available on a particular output data bus.<br/>
+  - The packet receiver will then wait until it has enough space to hold the bytes of the packet and then respond with the assertion of the read_enb_x (read_enb_0, read_enb_1, read_enb_2) signal.<br/>
+  - The read_enb_x (read_enb_0, read_enb_1, read_enb_2) input signal can be asserted on the falling clock edge in which data are read from the data_out_x (data_out_0, data_out_1, data_out_2) bus.<br/>
+  - The read_enb_x (read_enb_0, read_enb_1, read_enb_2) must be asserted within 30 clock cycles of vld_out_x (vld_out_0, vld_out_1, vld_out_2) being asserted else time-out occurs, which resets the FIFO.<br/>
+  - The  data_out_x bus will be tri-ststed during a scenario when a packet's byte is lost due to time-out condition.<br/>
 
 ## Verification Plan
 ### Features
@@ -43,3 +66,6 @@ It is an active low synchronous input that resets the router. Under reset condit
 Refer to [Router-Input Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-input-protocol)
 #### <ins>Reading Packet</ins>
 Refer to [Router-Output Protocol](https://github.com/theteamonk/router1x3-uvm-verification/edit/main/README.md#router-output-protocol)
+
+## Important Note
+This Specification is provided by Maven-Silicon under their [Terms and Conditions](https://www.maven-silicon.com/terms-and-conditions/)
